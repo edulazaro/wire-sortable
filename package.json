@@ -1,6 +1,6 @@
 {
   "name": "wire-sortable",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Drag and drop sorting for Laravel Livewire, powered by SortableJS",
   "main": "dist/wire-sortable.js",
   "module": "dist/wire-sortable.esm.js",

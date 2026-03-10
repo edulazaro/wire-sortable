@@ -15,7 +15,7 @@
 
 ---
 
-## Why wire-sortable?
+## Introduction
 
 Livewire doesn't ship with built-in drag and drop support. The official `livewire-sortable` package relies on Shopify Draggable, which is heavier, less actively maintained, and has known issues with `wire:navigate` and Livewire 3+ lifecycle events.
 
@@ -260,8 +260,8 @@ For projects without a build step:
 
 ## Author
 
-[Edu Lazaro](https://edulazaro.com)
+Created by [Edu Lazaro](https://edulazaro.com)
 
 ## License
 
-[MIT](LICENSE)
+wire-sortable is open-sourced software licensed under the [MIT license](LICENSE).

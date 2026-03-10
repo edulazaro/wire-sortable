@@ -17,6 +17,10 @@
 
 ## Why wire-sortable?
 
+Livewire doesn't ship with built-in drag and drop support. The official `livewire-sortable` package relies on Shopify Draggable, which is heavier, less actively maintained, and has known issues with `wire:navigate` and Livewire 3+ lifecycle events.
+
+**wire-sortable** is a lightweight alternative built on [SortableJS](https://github.com/SortableJS/Sortable), the most widely used drag and drop library in the JavaScript ecosystem. It integrates seamlessly with Livewire using simple HTML attributes: no PHP package required, no configuration needed. Just import and go.
+
 | | wire-sortable | livewire-sortable (official) |
 |---|---|---|
 | Engine | SortableJS (actively maintained) | Shopify Draggable (less active) |
@@ -86,7 +90,7 @@ Only the handle element triggers dragging:
         <li wire:sortable.item="{{ $item->id }}" wire:key="item-{{ $item->id }}"
             class="flex items-center gap-3 p-3 bg-white rounded-lg shadow">
             <span wire:sortable.handle class="cursor-grab text-gray-400 hover:text-gray-600">
-                &#x2630;
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M7 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
             </span>
             <span>{{ $item->name }}</span>
         </li>
@@ -156,8 +160,8 @@ public function updateTaskOrder($items, $toStatus, $fromStatus)
 | `wire:sortable="method"` | Livewire method called on sort. Receives `($items, $toContainer, $fromContainer)` |
 | `wire:sortable.item="id"` | Marks an element as sortable. The value is passed in the `$items` array |
 | `wire:sortable.handle` | Only this element triggers dragging (optional) |
-| `wire:sortable.group="name"` | Groups containers — items can only move between containers with the same group |
-| `wire:sortable.container="id"` | Identifies the container — passed as `$toContainer` / `$fromContainer` |
+| `wire:sortable.group="name"` | Groups containers: items can only move between containers with the same group |
+| `wire:sortable.container="id"` | Identifies the container, passed as `$toContainer` / `$fromContainer` |
 | `wire:sortable.options='JSON'` | Custom [SortableJS options](https://github.com/SortableJS/Sortable#options) as JSON |
 
 ## The `$items` array
@@ -253,6 +257,10 @@ For projects without a build step:
 ```html
 <script src="https://unpkg.com/wire-sortable@latest/dist/wire-sortable.min.js"></script>
 ```
+
+## Author
+
+[Edu Lazaro](https://edulazaro.com)
 
 ## License
 

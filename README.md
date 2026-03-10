@@ -31,6 +31,8 @@ Livewire doesn't ship with built-in drag and drop support. The official `livewir
 | Livewire 3+ | Yes | Yes |
 | `wire:navigate` | Yes | Partial |
 
+[See it in action](https://x.com/neeonez/status/2031378230570053732)
+
 ## Installation
 
 ```bash

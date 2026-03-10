@@ -15,8 +15,6 @@
 
 ---
 
-[See it in action](https://x.com/neeonez/status/2031378230570053732)
-
 ## Introduction
 
 Livewire doesn't ship with built-in drag and drop support. The official `livewire-sortable` package relies on Shopify Draggable, which is heavier, less actively maintained, and has known issues with `wire:navigate` and Livewire 3+ lifecycle events.

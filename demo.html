@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>wire-sortable demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/sortablejs@1.15.6/Sortable.min.js"></script>
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .sortable-ghost { opacity: 0.3; }
+        .sortable-chosen { box-shadow: 0 20px 40px rgba(0,0,0,0.15); transform: scale(1.02); }
+        .tab-active { border-color: #7c3aed; color: #7c3aed; background: #f5f3ff; }
+        .fullscreen-btn { position: fixed; top: 16px; right: 16px; z-index: 50; }
+        :fullscreen { background: white; overflow-y: auto; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-in { animation: fadeIn 0.3s ease-out; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+    <button onclick="toggleFullscreen()" class="fullscreen-btn bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 transition flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+        Fullscreen
+    </button>
+
+    <div id="app" class="max-w-5xl mx-auto px-6 py-12">
+
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">wire-sortable</h1>
+            <p class="text-lg text-gray-500">Drag and drop sorting for Livewire, powered by SortableJS</p>
+            <div class="flex items-center justify-center gap-3 mt-4">
+                <span class="bg-violet-100 text-violet-700 text-xs font-semibold px-3 py-1 rounded-full">~36 KB</span>
+                <span class="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">Livewire 3+</span>
+                <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">wire:navigate</span>
+                <span class="bg-orange-100 text-orange-700 text-xs font-semibold px-3 py-1 rounded-full">SortableJS</span>
+            </div>
+        </div>
+
+        <div class="flex border-b border-gray-200 mb-8">
+            <button onclick="showTab('list')" id="tab-list" class="px-5 py-3 text-sm font-medium border-b-2 transition tab-active">
+                Task List
+            </button>
+            <button onclick="showTab('handles')" id="tab-handles" class="px-5 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition">
+                Drag Handles
+            </button>
+            <button onclick="showTab('kanban')" id="tab-kanban" class="px-5 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition">
+                Kanban Board
+            </button>
+            <button onclick="showTab('gallery')" id="tab-gallery" class="px-5 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 transition">
+                Image Gallery
+            </button>
+        </div>
+
+        <!-- TAB: Simple List -->
+        <div id="panel-list" class="animate-in">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900">Simple list sorting</h2>
+                    <p class="text-sm text-gray-500 mt-1">wire:sortable="updateOrder"</p>
+                </div>
+                <code class="text-xs bg-gray-100 text-gray-600 px-3 py-1.5 rounded-lg font-mono">wire:sortable.item="{{ $task->id }}"</code>
+            </div>
+            <ul id="sortable-list" class="space-y-2">
+                <li class="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-200 cursor-grab active:cursor-grabbing transition hover:border-violet-300">
+                    <span class="w-8 h-8 rounded-lg bg-violet-100 text-violet-600 flex items-center justify-center text-sm font-bold">1</span>
+                    <div class="flex-1">
+                        <div class="font-medium text-gray-900">Set up authentication flow</div>
+                        <div class="text-xs text-gray-400 mt-0.5">High priority</div>
+                    </div>
+                    <span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">Urgent</span>
+                </li>
+                <li class="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-200 cursor-grab active:cursor-grabbing transition hover:border-violet-300">
+                    <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold">2</span>
+                    <div class="flex-1">
+                        <div class="font-medium text-gray-900">Design dashboard layout</div>
+                        <div class="text-xs text-gray-400 mt-0.5">Medium priority</div>
+                    </div>
+                    <span class="text-xs bg-yellow-100 text-yellow-600 px-2 py-0.5 rounded-full">In Progress</span>
+                </li>
+                <li class="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-200 cursor-grab active:cursor-grabbing transition hover:border-violet-300">
+                    <span class="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center text-sm font-bold">3</span>
+                    <div class="flex-1">
+                        <div class="font-medium text-gray-900">Implement API endpoints</div>
+                        <div class="text-xs text-gray-400 mt-0.5">Medium priority</div>
+                    </div>
+                    <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Backend</span>
+                </li>
+                <li class="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-200 cursor-grab active:cursor-grabbing transition hover:border-violet-300">
+                    <span class="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center text-sm font-bold">4</span>
+                    <div class="flex-1">
+                        <div class="font-medium text-gray-900">Write unit tests</div>
+                        <div class="text-xs text-gray-400 mt-0.5">Low priority</div>
+                    </div>
+                    <span class="text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded-full">Testing</span>
+                </li>
+                <li class="flex items-center gap-3 p-4 bg-white rounded-xl border border-gray-200 cursor-grab active:cursor-grabbing transition hover:border-violet-300">
+                    <span class="w-8 h-8 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center text-sm font-bold">5</span>
+                    <div class="flex-1">
+                        <div class="font-medium text-gray-900">Deploy to production</div>
+                        <div class="text-xs text-gray-400 mt-0.5">Low priority</div>
+                    </div>
+                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">DevOps</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- TAB: Handles -->
+        <div id="panel-handles" class="hidden animate-in">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900">Drag handles</h2>
+                    <p class="text-sm text-gray-500 mt-1">Only the grip icon triggers dragging</p>
+                </div>
+                <code class="text-xs bg-gray-100 text-gray-600 px-3 py-1.5 rounded-lg font-mono">wire:sortable.handle</code>
+            </div>
+            <ul id="sortable-handles" class="space-y-2">
+                <li class="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-200 transition hover:border-violet-300">
+                    <span class="handle cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 transition">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M7 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+                    </span>
+                    <img src="https://i.pravatar.cc/40?img=1" class="w-10 h-10 rounded-full" />
+                    <div class="flex-1">
+                        <div class="font-medium text-gray-900">Sarah Johnson</div>
+                        <div class="text-sm text-gray-500">Product Designer</div>
+                    </div>
+                    <span class="text-xs bg-green-100 text-green-700 px-2.5 py-1 rounded-full">Active</span>
+                </li>
+                <li class="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-200 transition hover:border-violet-300">
+                    <span class="handle cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 transition">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M7 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+                    </span>
+                    <img src="https://i.pravatar.cc/40?img=3" class="w-10 h-10 rounded-full" />
+                    <div class="flex-1">
+                        <div class="font-medium text-gray-900">Alex Rivera</div>
+                        <div class="text-sm text-gray-500">Frontend Developer</div>
+                    </div>
+                    <span class="text-xs bg-green-100 text-green-700 px-2.5 py-1 rounded-full">Active</span>
+                </li>
+                <li class="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-200 transition hover:border-violet-300">
+                    <span class="handle cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 transition">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M7 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+                    </span>
+                    <img src="https://i.pravatar.cc/40?img=5" class="w-10 h-10 rounded-full" />
+                    <div class="flex-1">
+                        <div class="font-medium text-gray-900">Maria Chen</div>
+                        <div class="text-sm text-gray-500">Backend Developer</div>
+                    </div>
+                    <span class="text-xs bg-yellow-100 text-yellow-700 px-2.5 py-1 rounded-full">Away</span>
+                </li>
+                <li class="flex items-center gap-4 p-4 bg-white rounded-xl border border-gray-200 transition hover:border-violet-300">
+                    <span class="handle cursor-grab active:cursor-grabbing text-gray-300 hover:text-gray-500 transition">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M7 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 8a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM7 14a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm6 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+                    </span>
+                    <img src="https://i.pravatar.cc/40?img=8" class="w-10 h-10 rounded-full" />
+                    <div class="flex-1">
+                        <div class="font-medium text-gray-900">James Park</div>
+                        <div class="text-sm text-gray-500">DevOps Engineer</div>
+                    </div>
+                    <span class="text-xs bg-green-100 text-green-700 px-2.5 py-1 rounded-full">Active</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- TAB: Kanban -->
+        <div id="panel-kanban" class="hidden animate-in">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900">Kanban board</h2>
+                    <p class="text-sm text-gray-500 mt-1">Drag items between columns</p>
+                </div>
+                <code class="text-xs bg-gray-100 text-gray-600 px-3 py-1.5 rounded-lg font-mono">wire:sortable.group="board"</code>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="w-3 h-3 rounded-full bg-gray-400"></span>
+                        <h3 class="font-semibold text-gray-700 text-sm uppercase tracking-wide">Backlog</h3>
+                        <span class="text-xs text-gray-400 ml-auto" id="count-backlog">3</span>
+                    </div>
+                    <div id="kanban-backlog" class="space-y-2 min-h-[200px] bg-gray-100 rounded-xl p-3">
+                        <div class="p-3 bg-white rounded-lg border border-gray-200 cursor-grab active:cursor-grabbing shadow-sm hover:shadow transition">
+                            <div class="font-medium text-sm text-gray-900">User onboarding flow</div>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded">Feature</span>
+                                <img src="https://i.pravatar.cc/20?img=1" class="w-5 h-5 rounded-full ml-auto" />
+                            </div>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg border border-gray-200 cursor-grab active:cursor-grabbing shadow-sm hover:shadow transition">
+                            <div class="font-medium text-sm text-gray-900">Email notifications</div>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded">Enhancement</span>
+                                <img src="https://i.pravatar.cc/20?img=3" class="w-5 h-5 rounded-full ml-auto" />
+                            </div>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg border border-gray-200 cursor-grab active:cursor-grabbing shadow-sm hover:shadow transition">
+                            <div class="font-medium text-sm text-gray-900">Dark mode support</div>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded">UI</span>
+                                <img src="https://i.pravatar.cc/20?img=5" class="w-5 h-5 rounded-full ml-auto" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                        <h3 class="font-semibold text-gray-700 text-sm uppercase tracking-wide">In Progress</h3>
+                        <span class="text-xs text-gray-400 ml-auto" id="count-progress">2</span>
+                    </div>
+                    <div id="kanban-progress" class="space-y-2 min-h-[200px] bg-blue-50 rounded-xl p-3">
+                        <div class="p-3 bg-white rounded-lg border border-gray-200 cursor-grab active:cursor-grabbing shadow-sm hover:shadow transition">
+                            <div class="font-medium text-sm text-gray-900">Payment integration</div>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded">Critical</span>
+                                <img src="https://i.pravatar.cc/20?img=8" class="w-5 h-5 rounded-full ml-auto" />
+                            </div>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg border border-gray-200 cursor-grab active:cursor-grabbing shadow-sm hover:shadow transition">
+                            <div class="font-medium text-sm text-gray-900">Search functionality</div>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="text-xs bg-purple-100 text-purple-600 px-2 py-0.5 rounded">Feature</span>
+                                <img src="https://i.pravatar.cc/20?img=1" class="w-5 h-5 rounded-full ml-auto" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                        <h3 class="font-semibold text-gray-700 text-sm uppercase tracking-wide">Done</h3>
+                        <span class="text-xs text-gray-400 ml-auto" id="count-done">2</span>
+                    </div>
+                    <div id="kanban-done" class="space-y-2 min-h-[200px] bg-green-50 rounded-xl p-3">
+                        <div class="p-3 bg-white rounded-lg border border-gray-200 cursor-grab active:cursor-grabbing shadow-sm hover:shadow transition">
+                            <div class="font-medium text-sm text-gray-900">Database schema</div>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded">Backend</span>
+                                <img src="https://i.pravatar.cc/20?img=5" class="w-5 h-5 rounded-full ml-auto" />
+                            </div>
+                        </div>
+                        <div class="p-3 bg-white rounded-lg border border-gray-200 cursor-grab active:cursor-grabbing shadow-sm hover:shadow transition">
+                            <div class="font-medium text-sm text-gray-900">CI/CD pipeline</div>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="text-xs bg-orange-100 text-orange-600 px-2 py-0.5 rounded">DevOps</span>
+                                <img src="https://i.pravatar.cc/20?img=8" class="w-5 h-5 rounded-full ml-auto" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Gallery -->
+        <div id="panel-gallery" class="hidden animate-in">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900">Image gallery</h2>
+                    <p class="text-sm text-gray-500 mt-1">Reorder images with custom options</p>
+                </div>
+                <code class="text-xs bg-gray-100 text-gray-600 px-3 py-1.5 rounded-lg font-mono">wire:sortable.options='{"animation": 200}'</code>
+            </div>
+            <div id="sortable-gallery" class="grid grid-cols-4 gap-3">
+                <div class="cursor-grab active:cursor-grabbing rounded-xl overflow-hidden border-2 border-transparent hover:border-violet-300 transition">
+                    <img src="https://picsum.photos/seed/a1/300/200" class="w-full h-36 object-cover" />
+                </div>
+                <div class="cursor-grab active:cursor-grabbing rounded-xl overflow-hidden border-2 border-transparent hover:border-violet-300 transition">
+                    <img src="https://picsum.photos/seed/b2/300/200" class="w-full h-36 object-cover" />
+                </div>
+                <div class="cursor-grab active:cursor-grabbing rounded-xl overflow-hidden border-2 border-transparent hover:border-violet-300 transition">
+                    <img src="https://picsum.photos/seed/c3/300/200" class="w-full h-36 object-cover" />
+                </div>
+                <div class="cursor-grab active:cursor-grabbing rounded-xl overflow-hidden border-2 border-transparent hover:border-violet-300 transition">
+                    <img src="https://picsum.photos/seed/d4/300/200" class="w-full h-36 object-cover" />
+                </div>
+                <div class="cursor-grab active:cursor-grabbing rounded-xl overflow-hidden border-2 border-transparent hover:border-violet-300 transition">
+                    <img src="https://picsum.photos/seed/e5/300/200" class="w-full h-36 object-cover" />
+                </div>
+                <div class="cursor-grab active:cursor-grabbing rounded-xl overflow-hidden border-2 border-transparent hover:border-violet-300 transition">
+                    <img src="https://picsum.photos/seed/f6/300/200" class="w-full h-36 object-cover" />
+                </div>
+                <div class="cursor-grab active:cursor-grabbing rounded-xl overflow-hidden border-2 border-transparent hover:border-violet-300 transition">
+                    <img src="https://picsum.photos/seed/g7/300/200" class="w-full h-36 object-cover" />
+                </div>
+                <div class="cursor-grab active:cursor-grabbing rounded-xl overflow-hidden border-2 border-transparent hover:border-violet-300 transition">
+                    <img src="https://picsum.photos/seed/h8/300/200" class="w-full h-36 object-cover" />
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-12 text-center text-sm text-gray-400">
+            npm install wire-sortable
+        </div>
+    </div>
+
+    <script>
+        function showTab(name) {
+            ['list', 'handles', 'kanban', 'gallery'].forEach(t => {
+                document.getElementById('panel-' + t).classList.add('hidden');
+                document.getElementById('tab-' + t).classList.remove('tab-active');
+                document.getElementById('tab-' + t).classList.add('border-transparent', 'text-gray-500');
+            });
+            document.getElementById('panel-' + name).classList.remove('hidden');
+            document.getElementById('tab-' + name).classList.add('tab-active');
+            document.getElementById('tab-' + name).classList.remove('border-transparent', 'text-gray-500');
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function updateCounts() {
+            document.getElementById('count-backlog').textContent = document.getElementById('kanban-backlog').children.length;
+            document.getElementById('count-progress').textContent = document.getElementById('kanban-progress').children.length;
+            document.getElementById('count-done').textContent = document.getElementById('kanban-done').children.length;
+        }
+
+        function updateNumbers() {
+            document.querySelectorAll('#sortable-list > li').forEach((li, i) => {
+                const num = li.querySelector('.w-8');
+                if (num) num.textContent = i + 1;
+            });
+        }
+
+        Sortable.create(document.getElementById('sortable-list'), {
+            animation: 200,
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            onEnd: updateNumbers,
+        });
+
+        Sortable.create(document.getElementById('sortable-handles'), {
+            handle: '.handle',
+            animation: 200,
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+        });
+
+        const kanbanGroup = { name: 'kanban', pull: true, put: true };
+
+        Sortable.create(document.getElementById('kanban-backlog'), {
+            group: kanbanGroup,
+            animation: 200,
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            onEnd: updateCounts,
+        });
+
+        Sortable.create(document.getElementById('kanban-progress'), {
+            group: kanbanGroup,
+            animation: 200,
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            onEnd: updateCounts,
+        });
+
+        Sortable.create(document.getElementById('kanban-done'), {
+            group: kanbanGroup,
+            animation: 200,
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            onEnd: updateCounts,
+        });
+
+        Sortable.create(document.getElementById('sortable-gallery'), {
+            animation: 300,
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+{
+  "name": "wire-sortable",
+  "version": "1.0.0",
+  "description": "Drag and drop sorting for Laravel Livewire, powered by SortableJS",
+  "main": "dist/wire-sortable.js",
+  "module": "dist/wire-sortable.esm.js",
+  "unpkg": "dist/wire-sortable.min.js",
+  "types": "dist/wire-sortable.d.ts",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "livewire",
+    "sortable",
+    "sortablejs",
+    "drag-and-drop",
+    "laravel",
+    "wire:sortable"
+  ],
+  "author": "Edu Lazaro",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/edulazaro/wire-sortable.git"
+  },
+  "bugs": {
+    "url": "https://github.com/edulazaro/wire-sortable/issues"
+  },
+  "homepage": "https://github.com/edulazaro/wire-sortable#readme",
+  "dependencies": {
+    "sortablejs": "^1.15.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^16.0.0",
+    "@rollup/plugin-terser": "^0.4.0",
+    "jsdom": "^25.0.0",
+    "rollup": "^4.0.0",
+    "vitest": "^3.0.0"
+  }
+}
